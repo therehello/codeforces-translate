@@ -15,6 +15,7 @@ pip install codeforces-translate
 - [x] 翻译一个问题
 - [x] 翻译一场比赛
 - [ ] 输出为 $pdf$
+- [ ] 图片显示
 
 ## 快速使用
 

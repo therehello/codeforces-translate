@@ -10,6 +10,8 @@
 pip install codeforces-translate
 ```
 
+注意警告，若警告 python script 路径未添加到系统 PATH 中，请及时添加。
+
 ## 基本功能
 
 - [x] 翻译一个问题

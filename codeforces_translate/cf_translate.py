@@ -11,36 +11,33 @@ sleep_second = 0.2
 client = Translate()
 
 
-# 将获取到的html转为中文
-def html2str(html):
-    string = []
-    for i in html:
-        i = str(i).replace("\n", "") \
-                  .replace("$$$$$$", " $$$$$$ ")
-        i = re.sub(r'(?<!\$)\${3}(?!\$)', ' $$$ ', i)
-        i = re.sub(r"<.*?>", "", i)
-        string.append(i)
-    string = [i.translatedText
-              for i in client.translate(string, target='zh-CN')]
-    for i in range(len(string)):
-        string[i] = re.sub(r'(?<!\$)\$(?!\$)', '', string[i])
-        string[i] = re.sub(r'(?<!\$)\${2}(?!\$)', '$$$', string[i])
-
-        string[i] = string[i].replace("$$$", "$")\
-                             .replace("$$$", "$$")\
-                             .replace("&quot;", '"')\
-                             .replace("&#39;", "'")\
-                             .replace("&lt;", "\\lt")
-        string[i] += "\n\n"
-    string = "".join(string)
+def html2md_cn(html):
+    txt = str(html)
+    txt = txt.replace("$$$", "$")
+    txt = client.translate(txt, target='zh-CN').translatedText
+    txt = html2text.html2text(txt)
     sleep(sleep_second)
-    return string
+    return txt
+
+
+def sample_format(html):
+    # 样例格式比较特殊，单独处理
+    txt = ""
+    txts = html.find_all(name="div")
+    if txts:
+        for i in txts:
+            txt += i.string + "\n"
+    else:
+        txt = html.string
+    txt = txt.strip()
+    return txt
+
 
 def get_html(url):
-    cnt = 1 
+    cnt = 1
     while cnt <= 30:
         try:
-            response = requests.get(url, timeout = 10)
+            response = requests.get(url, timeout=10)
         except requests.exceptions.Timeout:
             cnt += 1
             continue
@@ -48,7 +45,7 @@ def get_html(url):
             return response.text
     print("请检查网络的联通性")
 
-# 获取url下的中文markdown
+
 def get_problem(url):
     html = get_html(url)
     soup = BeautifulSoup(html, 'lxml')
@@ -70,54 +67,48 @@ def get_problem(url):
                        "\n\n"
 
         # 题目描述
-        description = problem.find_all("div", recursive=False)[1].contents
-        description = html2str(description)
+        description = problem.find_all("div", recursive=False)[1]
+        description = html2md_cn(description)
         problems_cn += "### 题目描述\n\n" + description
 
         # 输入格式
-        input_format = problem.find(
-            name="div", attrs={"class": "input-specification"})
-        if input_format != None:
-            input_format = input_format.contents[1:]
-            input_format = html2str(input_format)
-            problems_cn += "### 输入格式\n\n" + input_format
+        input = problem.find(name="div", attrs={
+                             "class": "input-specification"})
+        if input:
+            input = html2md_cn(input)
+            problems_cn += "### " + input
 
         # 输出格式
-        output_format = problem.find_all("div", recursive=False)
-        if len(output_format) >= 4:
-            output_format = output_format[3]
-            output_format = html2str(output_format.contents[1:])
-            problems_cn += "### 输出格式\n\n" + output_format
+        output = problem.find_all("div", recursive=False)
+        if len(output) >= 4:
+            output = output[3]
+            output = html2md_cn(output)
+            problems_cn += "### " + output
 
         # 样例
         sample = problem.find(
             name="div", attrs={"class": "sample-test"})
-        if sample != None:
+        if sample:
             sample = sample.find_all(name="pre")
             cnt = 1
             for i in sample:
-                i = html2text.html2text(str(i))
-                i = i.split("\n")
-                temp = ""
-                for j in i:
-                    j = j.split(" ")
-                    j = " ".join([k for k in j if k != ""])
-                    if j != "":
-                        temp += "\n"+j
+                txt = sample_format(i)
                 if cnt % 2 == 1:
                     problems_cn += "### 输入 #"
                 else:
                     problems_cn += "### 输出 #"
-                problems_cn += str((cnt+1)//2)+"\n\n```txt"
-                problems_cn += temp+"\n```\n\n"
+                problems_cn += str((cnt+1)//2)+"\n\n```txt\n"
+                problems_cn += txt+"\n```\n\n"
                 cnt += 1
 
         # 说明
         note = problem.find(name="div", attrs={
             "class": "note"})
-        if note != None :
+        if note:
             note = note.contents[1:]
-            note = html2str(note)
+            note = [str(i) for i in note]
+            note = " ".join(note)
+            note = html2md_cn(note)
             problems_cn += "### 说明\n\n" + note
 
         # 完成该道题目的翻译

@@ -1,9 +1,8 @@
-import re
 from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from pygtrans import Translate
-import html2text
+from markdownify import markdownify
 import sys
 import os
 
@@ -15,7 +14,7 @@ def html2md_cn(html):
     txt = str(html)
     txt = txt.replace("$$$", "$")
     txt = client.translate(txt, target='zh-CN').translatedText
-    txt = html2text.html2text(txt)
+    txt = markdownify(txt)
     sleep(sleep_second)
     return txt
 
@@ -26,9 +25,11 @@ def sample_format(html):
     txts = html.find_all(name="div")
     if txts:
         for i in txts:
-            txt += i.string + "\n"
+            txt += i.text + "\n"
     else:
-        txt = html.string
+        txt = str(html)[5:-6]
+        txt = txt.replace("<br/>","\n")
+
     txt = txt.strip()
     return txt
 

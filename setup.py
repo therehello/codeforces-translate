@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="codeforces_translate",
-    version="0.1.0",
+    version="0.1.1",
     author="Therehello",
     author_email="therehello@qq.com",
     description="codeforces 翻译",

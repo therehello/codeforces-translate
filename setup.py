@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="codeforces_translate",
-    version="0.1.1",
+    version="0.1.2",
     author="Therehello",
     author_email="therehello@qq.com",
     description="codeforces 翻译",
@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/therehello/codeforces-translate",
     packages=setuptools.find_packages(),
     install_requires=[
-        'html2text',
+        'markdownify',
         'pygtrans',
         'bs4',
         'requests',

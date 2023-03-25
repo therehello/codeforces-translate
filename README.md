@@ -10,7 +10,19 @@
 pip install codeforces-translate
 ```
 
+如果你换源了，请使用以下命令进行安装
+
+```bash
+pip install -i https://pypi.org/simple/ codeforces-translate
+```
+
 注意警告，若警告 python script 路径未添加到系统 PATH 中，请及时添加。
+
+## 更新
+
+```bash
+pip install --upgrade codeforces-translate
+```
 
 ## 基本功能
 

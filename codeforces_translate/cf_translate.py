@@ -2,7 +2,7 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from pygtrans import Translate
-from markdownify import markdownify
+from html2text import html2text
 import sys
 import os
 
@@ -14,7 +14,7 @@ def html2md_cn(html):
     txt = str(html)
     txt = txt.replace("$$$", "$")
     txt = client.translate(txt, target='zh-CN').translatedText
-    txt = markdownify(txt)
+    txt = html2text(txt)
     sleep(sleep_second)
     return txt
 

@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/therehello/codeforces-translate",
     packages=setuptools.find_packages(),
     install_requires=[
-        'markdownify',
+        'html2text',
         'pygtrans',
         'bs4',
         'requests',

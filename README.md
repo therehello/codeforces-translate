@@ -6,6 +6,8 @@
 
 ## 安装
 
+请先确保你有 python 环境
+
 ```bash
 pip install codeforces-translate
 ```
